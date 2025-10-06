@@ -54,9 +54,15 @@ namespace PDF_downloader
                 var downloadTasks = downloaders.Select(d => d.download()).ToList();
                 await Task.WhenAll(downloadTasks);
 
-                for (int i = 0; i < downloadTasks.Count; i++) 
+                for (int i = 0; i < downloaders.Count; i++) 
                 {
-
+                    if (downloaders[i].Status)
+                    {
+                        Console.WriteLine(downloaders[i].Name+" PDF downloaded successfully!");
+                    } else
+                    {
+                        Console.WriteLine(downloaders[i].Name + " PDF did not download!");
+                    }
                 }
 
                 //name 1

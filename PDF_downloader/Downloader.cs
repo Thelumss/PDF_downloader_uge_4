@@ -11,7 +11,7 @@ namespace PDF_downloader
         private string name;
         private string pDFURlLink;
         private string reportHtmlAddress;
-        private bool status;
+        private bool status = true;
 
         public Downloader(string name, string pDFURlLink, string reportHtmlAddress)
         {
@@ -36,7 +36,7 @@ namespace PDF_downloader
                 byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
                 await File.WriteAllBytesAsync(filePath, pdfBytes);
 
-                Console.WriteLine("PDF downloaded successfully!");
+                //Console.WriteLine("PDF downloaded successfully!");
                 }
             catch (Exception ex)
             {
@@ -54,11 +54,12 @@ namespace PDF_downloader
                     byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
                     await File.WriteAllBytesAsync(filePath, pdfBytes);
 
-                    Console.WriteLine("PDF downloaded successfully!");
+                    //Console.WriteLine("PDF downloaded successfully!");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error downloading PDF: {ex.Message}");
+                    status = false;
+                    //Console.WriteLine($"Error downloading PDF: {ex.Message}");
                 }
             }
         }
