@@ -8,5 +8,59 @@ namespace PDF_downloader
 {
     internal class Downloader
     {
+        private string name;
+        private string pDFURlLink;
+        private string reportHtmlAddress;
+        private bool status;
+
+        public Downloader(string name, string pDFURlLink, string reportHtmlAddress)
+        {
+            this.Name = name;
+            this.pDFURlLink = pDFURlLink;
+            this.reportHtmlAddress = reportHtmlAddress;
+        }
+
+        public string Name { get => name; set => name = value; }
+        public bool Status { get => status; set => status = value; }
+
+        public async Task download()
+        {
+            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\"+Name +".pdf";
+            bool firstTry = true;
+            try
+                {
+                using HttpClient client = new HttpClient();
+                using HttpResponseMessage response = await client.GetAsync(this.pDFURlLink);
+                response.EnsureSuccessStatusCode();
+
+                byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                Console.WriteLine("PDF downloaded successfully!");
+                }
+            catch (Exception ex)
+            {
+                firstTry = false;
+            }
+
+            if (!firstTry)
+            {
+                try
+                {
+                    using HttpClient client = new HttpClient();
+                    using HttpResponseMessage response = await client.GetAsync(this.reportHtmlAddress);
+                    response.EnsureSuccessStatusCode();
+
+                    byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                    await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                    Console.WriteLine("PDF downloaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error downloading PDF: {ex.Message}");
+                }
+            }
+        }
     }
 }

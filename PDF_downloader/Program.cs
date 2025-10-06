@@ -7,7 +7,9 @@ namespace PDF_downloader
         {
             Coordinator coordinator = new Coordinator();
 
-            await coordinator.test();
+            await coordinator.Coordinating();
+
+            //Downloader downloader = new Downloader(testc,);
         }
     }
 }
