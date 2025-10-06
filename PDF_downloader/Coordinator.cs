@@ -46,7 +46,7 @@ namespace PDF_downloader
                 Console.Clear();
                 Console.WriteLine("begining downloads");
                 //range.RowCount()
-                for (int row = 2; row <= 20; row++)
+                for (int row = 2; row <= 10; row++)
                 {
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
@@ -56,26 +56,35 @@ namespace PDF_downloader
             }
 
             var downloadTasks = downloaders.Select(d => d.download()).ToList();
-            await Task.WhenAll(downloadTasks);
-
-            Console.Clear();
-            for (int i = 0; i < downloaders.Count; i++)
+            while (!downloadTasks.All(t => t.IsCompleted))
             {
-                if (!downloaders[i].Status)
+                Console.Clear();
+                for (int i = 0; i < downloaders.Count; i++)
                 {
-                    Console.WriteLine(downloaders[i].Name + " PDF did not download!");
-                    continue;
-                }
+                    if (downloaders[i].IsDownloading)
+                    {
+                        Console.WriteLine(downloaders[i].Name + " is still downloading!");
+                        continue;
+                    }
+                    if (!downloaders[i].Status)
+                    {
+                        Console.WriteLine(downloaders[i].Name + " PDF did not download!");
+                        continue;
+                    }
 
-                if (downloaders[i].Linkchoice)
-                {
-                    Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Pdf_URL");
+                    if (downloaders[i].Linkchoice)
+                    {
+                        Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Pdf_URL");
+                    }
+                    else
+                    {
+                        Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
+                    }
                 }
-                else
-                {
-                    Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
-                }
+                await Task.Delay(1000);
+
             }
+
         }
     }
 }
