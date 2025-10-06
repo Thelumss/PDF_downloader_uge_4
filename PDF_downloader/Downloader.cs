@@ -14,10 +14,10 @@ namespace PDF_downloader
         private bool status = true;
         private bool linkchoice = true;
 
-        public Downloader(string name, string pDFURlLink, string reportHtmlAddress)
+        public Downloader(string name, string pdfFurLink, string reportHtmlAddress)
         {
             this.Name = name;
-            this.pDFURlLink = pDFURlLink;
+            this.pDFURlLink = pdfFurLink;
             this.reportHtmlAddress = reportHtmlAddress;
         }
 
@@ -26,7 +26,7 @@ namespace PDF_downloader
         public bool Linkchoice { get => linkchoice; set => linkchoice = value; }
         public async Task download()
         {
-            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\" + Name + ".pdf";
+            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\TestDowload\\" + Name + ".pdf";
             bool firstTry = true;
             try
             {
