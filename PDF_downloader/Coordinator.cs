@@ -47,7 +47,7 @@ namespace PDF_downloader
                 Console.Clear();
                 Console.WriteLine("begining downloads");
                 //range.RowCount()
-                for (int row = 2; row <= 100; row++)
+                for (int row = 2; row <= 30; row++)
                 {
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
@@ -69,11 +69,10 @@ namespace PDF_downloader
                         continue;
                     }
                 }
-                Console.WriteLine(numberComplet + "/" + downloaders.Count + " are done!");
-                await Task.Delay(1000);
+                    Console.WriteLine(numberComplet + "/" + downloaders.Count + " are done!");
+                    await Task.Delay(1000);
 
             }
-
             Console.Clear();
             for (int i = 0; i < downloaders.Count; i++)
             {
@@ -97,7 +96,7 @@ namespace PDF_downloader
                     Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
                 }
             }
-
         }
     }
+
 }
