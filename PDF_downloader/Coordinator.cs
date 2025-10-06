@@ -42,7 +42,7 @@ namespace PDF_downloader
                             break;
                     }
                 }
-                
+
                 Console.Clear();
                 Console.WriteLine("begining downloads");
                 //range.RowCount()
@@ -51,22 +51,29 @@ namespace PDF_downloader
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
                     var cellValuereportHtml = worksheet.Cell(row, cellValuereportHtmlNum).GetValue<string>();
-                    downloaders.Add(new Downloader(cellValueName,cellValuePdf, cellValuereportHtml));
+                    downloaders.Add(new Downloader(cellValueName, cellValuePdf, cellValuereportHtml));
+                }
+            }
+
+            var downloadTasks = downloaders.Select(d => d.download()).ToList();
+            await Task.WhenAll(downloadTasks);
+
+            Console.Clear();
+            for (int i = 0; i < downloaders.Count; i++)
+            {
+                if (!downloaders[i].Status)
+                {
+                    Console.WriteLine(downloaders[i].Name + " PDF did not download!");
+                    continue;
                 }
 
-                var downloadTasks = downloaders.Select(d => d.download()).ToList();
-                await Task.WhenAll(downloadTasks);
-
-                Console.Clear();
-                for (int i = 0; i < downloaders.Count; i++) 
+                if (downloaders[i].Linkchoice)
                 {
-                    if (downloaders[i].Status)
-                    {
-                        Console.WriteLine(downloaders[i].Name+" PDF downloaded successfully!");
-                    } else
-                    {
-                        Console.WriteLine(downloaders[i].Name + " PDF did not download!");
-                    }
+                    Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Pdf_URL");
+                }
+                else
+                {
+                    Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
                 }
             }
         }

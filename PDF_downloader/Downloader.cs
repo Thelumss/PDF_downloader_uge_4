@@ -12,6 +12,7 @@ namespace PDF_downloader
         private string pDFURlLink;
         private string reportHtmlAddress;
         private bool status = true;
+        private bool linkchoice = true;
 
         public Downloader(string name, string pDFURlLink, string reportHtmlAddress)
         {
@@ -22,25 +23,24 @@ namespace PDF_downloader
 
         public string Name { get => name; set => name = value; }
         public bool Status { get => status; set => status = value; }
-
+        public bool Linkchoice { get => linkchoice; set => linkchoice = value; }
         public async Task download()
         {
-            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\"+Name +".pdf";
+            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\" + Name + ".pdf";
             bool firstTry = true;
             try
-                {
+            {
                 using HttpClient client = new HttpClient();
                 using HttpResponseMessage response = await client.GetAsync(this.pDFURlLink);
                 response.EnsureSuccessStatusCode();
 
                 byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
                 await File.WriteAllBytesAsync(filePath, pdfBytes);
-
-                //Console.WriteLine("PDF downloaded successfully!");
-                }
+            }
             catch (Exception ex)
             {
                 firstTry = false;
+                this.linkchoice = false;
             }
 
             if (!firstTry)
@@ -53,8 +53,6 @@ namespace PDF_downloader
 
                     byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
                     await File.WriteAllBytesAsync(filePath, pdfBytes);
-
-                    //Console.WriteLine("PDF downloaded successfully!");
                 }
                 catch (Exception ex)
                 {
