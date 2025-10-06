@@ -9,10 +9,11 @@ namespace PDF_downloader
 {
     class Coordinator
     {
-        private readonly string exelFilePath = "C:\\Users\\SPAC-O-2\\Desktop\\Git\\PDF_downloader\\PDF_downloader\\GRI_2017_2020.xlsx";
+        private readonly string exelFilePath = "..\\..\\..\\GRI_2017_2020.xlsx";
         private List<Downloader> downloaders = new List<Downloader>();
         public async Task Coordinating()
         {
+            Console.WriteLine("Prosesing exel file");
             using (var workbook = new XLWorkbook(exelFilePath))
             {
 
@@ -42,6 +43,8 @@ namespace PDF_downloader
                     }
                 }
                 
+                Console.Clear();
+                Console.WriteLine("begining downloads");
                 //range.RowCount()
                 for (int row = 2; row <= 10; row++)
                 {
@@ -54,6 +57,7 @@ namespace PDF_downloader
                 var downloadTasks = downloaders.Select(d => d.download()).ToList();
                 await Task.WhenAll(downloadTasks);
 
+                Console.Clear();
                 for (int i = 0; i < downloaders.Count; i++) 
                 {
                     if (downloaders[i].Status)
@@ -64,10 +68,6 @@ namespace PDF_downloader
                         Console.WriteLine(downloaders[i].Name + " PDF did not download!");
                     }
                 }
-
-                //name 1
-                //pdf 38
-                //report html 39
             }
         }
     }
