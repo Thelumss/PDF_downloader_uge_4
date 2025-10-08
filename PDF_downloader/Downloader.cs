@@ -30,7 +30,6 @@ namespace PDF_downloader
         public async Task download()
         {
             string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\TestDowload\\" + Name + ".pdf";
-            bool firstTry = true;
             try
             {
                 using HttpClient client = new HttpClient();
@@ -42,11 +41,9 @@ namespace PDF_downloader
             }
             catch (Exception ex)
             {
-                firstTry = false;
                 this.linkchoice = false;
             }
-
-            if (!firstTry)
+            if (!this.linkchoice)
             {
                 try
                 {
@@ -62,9 +59,7 @@ namespace PDF_downloader
                     status = false;
                     //Console.WriteLine($"Error downloading PDF: {ex.Message}");
                 }
-
             }
-
             isDownloading = false;
         }
     }
