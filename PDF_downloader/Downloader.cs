@@ -37,7 +37,7 @@
                 }
                 else { this.linkchoice = false; }
             }
-            catch (Exception ex)
+            catch
             {
                 this.linkchoice = false;
             }
@@ -64,7 +64,7 @@
                     else { status = false; }
 
                 }
-                catch (Exception ex)
+                catch
                 {
                     status = false;
                 }
