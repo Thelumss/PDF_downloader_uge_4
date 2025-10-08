@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PDF_downloader
+﻿namespace PDF_downloader
 {
     internal class Downloader
     {
@@ -48,26 +42,31 @@ namespace PDF_downloader
                 this.linkchoice = false;
             }
 
-            
+
             if (!this.linkchoice)
             {
                 try
                 {
-                    using HttpClient client = new HttpClient();
-                    using HttpResponseMessage response = await client.GetAsync(this.reportHtmlAddress);
-                    response.EnsureSuccessStatusCode();
-
-                    if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
+                    if (this.reportHtmlAddress != "")
                     {
-                        byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
-                        await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                        using HttpClient client = new HttpClient();
+                        using HttpResponseMessage response = await client.GetAsync(this.reportHtmlAddress);
+                        response.EnsureSuccessStatusCode();
+
+                        if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
+                        {
+                            byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                            await File.WriteAllBytesAsync(filePath, pdfBytes);
+                        }
+                        else { status = false; }
                     }
+                    else { status = false; }
 
                 }
                 catch (Exception ex)
                 {
                     status = false;
-                    //Console.WriteLine($"Error downloading PDF: {ex.Message}");
                 }
             }
             isDownloading = false;

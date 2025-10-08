@@ -1,9 +1,4 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace PDF_downloader
 {
@@ -47,7 +42,7 @@ namespace PDF_downloader
                 Console.Clear();
                 Console.WriteLine("beginning downloads");
                 //range.RowCount()
-                for (int row = 2; row <= 20; row++)
+                for (int row = 2; row <= 21; row++)
                 {
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
@@ -89,7 +84,7 @@ namespace PDF_downloader
                 worksheet.Cell(1, cellValueLinkUsed).Value = "Link_Used";
 
                 int downLoadesCounter = 0;
-                for (int row = 2; row <= downloaders.Count; row++)
+                for (int row = 2; row <= downloaders.Count+1; row++)
                 {
 
                     if (downloaders[downLoadesCounter].Status)
