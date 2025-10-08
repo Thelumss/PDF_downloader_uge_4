@@ -41,8 +41,18 @@ namespace PDF_downloader
 
                 Console.Clear();
                 Console.WriteLine("beginning downloads");
+                int number = 0;
                 //range.RowCount()
-                for (int row = 2; row <= 21; row++)
+                //try
+                //{
+                //    number = int.Parse(Console.ReadLine());
+
+                //}
+                //catch
+                //{
+                //    number = range.RowCount();
+                //}
+                for (int row = 2; row <= 51; row++)
                 {
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
