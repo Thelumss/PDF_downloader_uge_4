@@ -73,29 +73,6 @@ namespace PDF_downloader
                 await Task.Delay(1000);
 
             }
-            //Console.Clear();
-            //for (int i = 0; i < downloaders.Count; i++)
-            //{
-            //    if (downloaders[i].IsDownloading)
-            //    {
-            //        Console.WriteLine(downloaders[i].Name + " is still downloading!");
-            //        continue;
-            //    }
-            //    if (!downloaders[i].Status)
-            //    {
-            //        Console.WriteLine(downloaders[i].Name + " PDF did not download!");
-            //        continue;
-            //    }
-
-            //    if (downloaders[i].LinkChoice)
-            //    {
-            //        Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Pdf_URL");
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
-            //    }
-            //}
 
             Console.Clear();
             Console.WriteLine("Processing excel file");
