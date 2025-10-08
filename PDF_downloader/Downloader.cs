@@ -24,25 +24,31 @@ namespace PDF_downloader
 
         public string Name { get => name; set => name = value; }
         public bool Status { get => status; set => status = value; }
-        public bool Linkchoice { get => linkchoice; set => linkchoice = value; }
+        public bool LinkChoice { get => linkchoice; set => linkchoice = value; }
         public bool IsDownloading { get => isDownloading; set => isDownloading = value; }
 
-        public async Task download()
+        public async Task Download()
         {
-            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\TestDowload\\" + Name + ".pdf";
+            string filePath = "C:\\Users\\SPAC-O-2\\Desktop\\TestDownload\\" + Name + ".pdf";
             try
             {
                 using HttpClient client = new HttpClient();
                 using HttpResponseMessage response = await client.GetAsync(this.pdfFurLink);
                 response.EnsureSuccessStatusCode();
 
-                byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
-                await File.WriteAllBytesAsync(filePath, pdfBytes);
+                if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
+                {
+                    byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                    await File.WriteAllBytesAsync(filePath, pdfBytes);
+                }
+                else { this.linkchoice = false; }
             }
             catch (Exception ex)
             {
                 this.linkchoice = false;
             }
+
+            
             if (!this.linkchoice)
             {
                 try
@@ -51,8 +57,12 @@ namespace PDF_downloader
                     using HttpResponseMessage response = await client.GetAsync(this.reportHtmlAddress);
                     response.EnsureSuccessStatusCode();
 
-                    byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
-                    await File.WriteAllBytesAsync(filePath, pdfBytes);
+                    if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
+                    {
+                        byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                        await File.WriteAllBytesAsync(filePath, pdfBytes);
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -61,6 +71,34 @@ namespace PDF_downloader
                 }
             }
             isDownloading = false;
+        }
+
+        private bool IsPdfEmpty(string filePath)
+        {
+            try
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    byte[] header = new byte[5]; // %PDF- = 5 bytes
+                    stream.Read(header, 0, 5);
+                    string headerString = System.Text.Encoding.ASCII.GetString(header);
+
+                    if (!headerString.StartsWith("%PDF"))
+                    {
+                        Console.WriteLine("Invalid PDF header — deleting file.");
+                        File.Delete(filePath);
+                        return false;
+                    }
+                }
+
+                Console.WriteLine("File is a valid PDF.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading file: {ex.Message}");
+                File.Delete(filePath);
+            }
+            return true;
         }
     }
 }

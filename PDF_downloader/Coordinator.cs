@@ -9,13 +9,13 @@ namespace PDF_downloader
 {
     class Coordinator
     {
-        private string exelFilePath = "..\\..\\..\\GRI_2017_2020.xlsx";
+        private string excelFilePath = "..\\..\\..\\GRI_2017_2020.xlsx";
         private List<Downloader> downloaders = new List<Downloader>();
         public async Task Coordinating()
         {
             Console.Clear();
-            Console.WriteLine("Prosesing exel file");
-            using (var workbook = new XLWorkbook(exelFilePath))
+            Console.WriteLine("Processing excel file");
+            using (var workbook = new XLWorkbook(excelFilePath))
             {
 
                 var worksheet = workbook.Worksheet(1); // 1 = first sheet
@@ -45,9 +45,9 @@ namespace PDF_downloader
                 }
 
                 Console.Clear();
-                Console.WriteLine("begining downloads");
+                Console.WriteLine("beginning downloads");
                 //range.RowCount()
-                for (int row = 2; row <= 30; row++)
+                for (int row = 2; row <= 20; row++)
                 {
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
@@ -56,88 +56,89 @@ namespace PDF_downloader
                 }
             }
 
-            var downloadTasks = downloaders.Select(d => d.download()).ToList();
+            var downloadTasks = downloaders.Select(d => d.Download()).ToList();
             while (!downloadTasks.All(t => t.IsCompleted))
             {
                 Console.Clear();
-                int numberComplet = 0;
+                int numberComplete = 0;
                 for (int i = 0; i < downloaders.Count; i++)
                 {
                     if (!downloaders[i].IsDownloading)
                     {
-                        numberComplet++;
+                        numberComplete++;
                         continue;
                     }
                 }
-                Console.WriteLine(numberComplet + "/" + downloaders.Count + " are done!");
+                Console.WriteLine(numberComplete + "/" + downloaders.Count + " are done!");
                 await Task.Delay(1000);
 
             }
-            Console.Clear();
-            for (int i = 0; i < downloaders.Count; i++)
-            {
-                if (downloaders[i].IsDownloading)
-                {
-                    Console.WriteLine(downloaders[i].Name + " is still downloading!");
-                    continue;
-                }
-                if (!downloaders[i].Status)
-                {
-                    Console.WriteLine(downloaders[i].Name + " PDF did not download!");
-                    continue;
-                }
+            //Console.Clear();
+            //for (int i = 0; i < downloaders.Count; i++)
+            //{
+            //    if (downloaders[i].IsDownloading)
+            //    {
+            //        Console.WriteLine(downloaders[i].Name + " is still downloading!");
+            //        continue;
+            //    }
+            //    if (!downloaders[i].Status)
+            //    {
+            //        Console.WriteLine(downloaders[i].Name + " PDF did not download!");
+            //        continue;
+            //    }
 
-                if (downloaders[i].Linkchoice)
-                {
-                    Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Pdf_URL");
-                }
-                else
-                {
-                    Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
-                }
-            }
-            exelFilePath = "..\\..\\..\\Metadata2006_2016.xlsx";
-            using (var workbook = new XLWorkbook(exelFilePath))
+            //    if (downloaders[i].LinkChoice)
+            //    {
+            //        Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Pdf_URL");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(downloaders[i].Name + " PDF downloaded successfully used Report Html Address");
+            //    }
+            //}
+
+            Console.Clear();
+            Console.WriteLine("Processing excel file");
+            using (var workbook = new XLWorkbook())
             {
                 int cellValueNameNum = 1;
-                int cellValuePdfdownload = 1;
+                int cellValuePdfdownload = 2;
+                int cellValueLinkUsed = 3;
 
-                var worksheet = workbook.Worksheet(1);
-                var range = worksheet.RangeUsed();
+                var worksheet = workbook.Worksheets.Add("MySheet");
 
-                for (int col = 1; col <= range.ColumnCount(); col++)
-                {
-                    var cellValue = worksheet.Cell(1, col).GetValue<string>();
-                    switch (cellValue)
-                    {
-                        case ("BRnum"):
-                            cellValueNameNum = col;
-                            break;
-                        case ("pdf_downloaded"):
-                            cellValuePdfdownload = col;
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                worksheet.Cell(1, cellValueNameNum).Value = "BRnum";
+                worksheet.Cell(1, cellValuePdfdownload).Value = "pdf_downloaded";
+                worksheet.Cell(1, cellValueLinkUsed).Value = "Link_Used";
 
-                int downLoadescounter = 0;
-                for (int row = range.RowCount() + 1; row <= range.RowCount() + downloaders.Count; row++)
+                int downLoadesCounter = 0;
+                for (int row = 2; row <= downloaders.Count; row++)
                 {
 
-                    if (downloaders[downLoadescounter].Status)
+                    if (downloaders[downLoadesCounter].Status)
                     {
-                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[downLoadescounter].Name;
+                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[downLoadesCounter].Name;
                         worksheet.Cell(row, cellValuePdfdownload).Value = "Yes";
+                        if (downloaders[downLoadesCounter].LinkChoice)
+                        {
+                            worksheet.Cell(row, cellValueLinkUsed).Value = "used Pdf_URL";
+                        }
+                        else
+                        {
+                            worksheet.Cell(row, cellValueLinkUsed).Value = "used Report Html Address";
+                        }
                     }
                     else
                     {
-                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[downLoadescounter].Name;
+                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[downLoadesCounter].Name;
                         worksheet.Cell(row, cellValuePdfdownload).Value = "No";
+                        worksheet.Cell(row, cellValueLinkUsed).Value = "N/A";
                     }
-                    downLoadescounter++;
+                    downLoadesCounter++;
                 }
-                workbook.Save();
+                workbook.SaveAs("..\\..\\..\\list_of_Downloads.xlsx");
+                Console.Clear();
+                Console.WriteLine("Work done");
             }
         }
     }
