@@ -4,7 +4,16 @@ namespace PDF_downloader
 {
     class Coordinator
     {
+        
         private string excelFilePath = "..\\..\\..\\GRI_2017_2020.xlsx";
+        public string linkfilepath {  get; set; }
+
+        public Coordinator(string excelFilePath, string linkFilepath)
+        {
+            this.excelFilePath = excelFilePath;
+            this.linkfilepath = linkFilepath;
+        }
+
         private List<Downloader> downloaders = new List<Downloader>();
         public async Task Coordinating()
         {
@@ -47,7 +56,7 @@ namespace PDF_downloader
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
                     var cellValuereportHtml = worksheet.Cell(row, cellValuereportHtmlNum).GetValue<string>();
-                    this.downloaders.Add(new Downloader(cellValueName, cellValuePdf, cellValuereportHtml));
+                    this.downloaders.Add(new Downloader(cellValueName, cellValuePdf, cellValuereportHtml, linkfilepath));
                 }
             }
 
