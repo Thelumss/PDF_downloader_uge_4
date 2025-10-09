@@ -13,8 +13,8 @@ namespace PDF_downloader
             using (var workbook = new XLWorkbook(excelFilePath))
             {
 
-                var worksheet = workbook.Worksheet(1); // 1 = first sheet
-                var range = worksheet.RangeUsed(); // Gets the used range of cells
+                var worksheet = workbook.Worksheet(1);
+                var range = worksheet.RangeUsed();
 
                 int cellValueNameNum = 1;
                 int cellValuePdfNum = 1;
@@ -51,24 +51,19 @@ namespace PDF_downloader
                 }
             }
 
-            var downloadTasks = downloaders.Select(d => d.Download()).ToList();
-            while (!downloadTasks.All(t => t.IsCompleted))
+            
+            const int batchSize = 100;
+            for (int i = 0; i < downloaders.Count; i += batchSize)
             {
+
+                var batch = downloaders.Skip(i).Take(batchSize).ToList();
+                var tasks = batch.Select(d => d.Download()).ToList();
+                await Task.WhenAll(tasks);
+
                 Console.Clear();
-                int numberComplete = 0;
-                for (int i = 0; i < downloaders.Count; i++)
-                {
-                    if (!downloaders[i].IsDownloading)
-                    {
-                        numberComplete++;
-                        continue;
-                    }
-                }
-                Console.WriteLine(numberComplete + "/" + downloaders.Count + " are done!");
-                await Task.Delay(1000);
+                Console.WriteLine($"Completed {Math.Min(i + batchSize, downloaders.Count)}/{downloaders.Count}");
             }
 
-            await Task.WhenAll(downloadTasks);
 
             Console.Clear();
             Console.WriteLine("Processing excel file");
@@ -89,11 +84,11 @@ namespace PDF_downloader
                     int row = i + 2;
                     var d = downloaders[i];
 
-                    if (downloaders[i].Status)
+                    if (d.Status)
                     {
-                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[i].Name;
+                        worksheet.Cell(row, cellValueNameNum).Value = d.Name;
                         worksheet.Cell(row, cellValuePdfdownload).Value = "Yes";
-                        if (downloaders[i].LinkChoice)
+                        if (d.LinkChoice)
                         {
                             worksheet.Cell(row, cellValueLinkUsed).Value = "used Pdf_URL";
                         }
@@ -113,9 +108,9 @@ namespace PDF_downloader
 
                 }
                 workbook.SaveAs("..\\..\\..\\list_of_Downloads.xlsx");
+            }
                 Console.Clear();
                 Console.WriteLine("Work done");
-            }
         }
     }
 
