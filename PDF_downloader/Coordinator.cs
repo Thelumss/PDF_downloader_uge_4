@@ -76,8 +76,9 @@ namespace PDF_downloader
                 }
                 Console.WriteLine(numberComplete + "/" + downloaders.Count + " are done!");
                 await Task.Delay(1000);
-
             }
+
+            await Task.WhenAll(downloadTasks);
 
             Console.Clear();
             Console.WriteLine("Processing excel file");
@@ -92,17 +93,17 @@ namespace PDF_downloader
                 worksheet.Cell(1, cellValueNameNum).Value = "BRnum";
                 worksheet.Cell(1, cellValuePdfdownload).Value = "pdf_downloaded";
                 worksheet.Cell(1, cellValueLinkUsed).Value = "Link_Used";
-                workbook.SaveAs("..\\..\\..\\list_of_Downloads.xlsx");
 
-                int downLoadesCounter = 0;
-                for (int row = 2; row <= downloaders.Count+1; row++)
+                for (int i = 0; i < downloaders.Count; i++)
                 {
+                    int row = i + 2;
+                    var d = downloaders[i];
 
-                    if (downloaders[downLoadesCounter].Status)
+                    if (downloaders[i].Status)
                     {
-                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[downLoadesCounter].Name;
+                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[i].Name;
                         worksheet.Cell(row, cellValuePdfdownload).Value = "Yes";
-                        if (downloaders[downLoadesCounter].LinkChoice)
+                        if (downloaders[i].LinkChoice)
                         {
                             worksheet.Cell(row, cellValueLinkUsed).Value = "used Pdf_URL";
                         }
@@ -113,18 +114,15 @@ namespace PDF_downloader
                     }
                     else
                     {
-                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[downLoadesCounter].Name;
+                        worksheet.Cell(row, cellValueNameNum).Value = downloaders[i].Name;
                         worksheet.Cell(row, cellValuePdfdownload).Value = "No";
                         worksheet.Cell(row, cellValueLinkUsed).Value = "N/A";
                     }
-                    downLoadesCounter++;
 
-                    if (row % 100 == 0)
-                    {
-                        workbook.Save();
-                    }
+
+
                 }
-                workbook.Save();
+                workbook.SaveAs("..\\..\\..\\list_of_Downloads.xlsx");
                 Console.Clear();
                 Console.WriteLine("Work done");
             }

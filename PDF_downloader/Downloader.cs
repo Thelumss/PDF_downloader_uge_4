@@ -2,102 +2,86 @@
 {
     internal class Downloader
     {
-        private string name;
-        private string pdfFurLink;
-        private string reportHtmlAddress;
-        private bool isDownloading = true;
-        private bool status = true;
-        private bool linkchoice = true;
+        public string Name { get; set; }
+        public string PdfUrl { get; set; }
+        public string ReportHtmlUrl { get; set; }
 
-        public Downloader(string name, string pdfFurLink, string reportHtmlAddress)
+        public bool IsDownloading { get; private set; }
+        public bool Status { get; private set; }
+        public bool LinkChoice { get; private set; }
+
+        public Downloader(string name, string pdfUrl, string reportHtmlUrl)
         {
-            this.name = name;
-            this.pdfFurLink = pdfFurLink;
-            this.reportHtmlAddress = reportHtmlAddress;
+            Name = name;
+            PdfUrl = pdfUrl;
+            ReportHtmlUrl = reportHtmlUrl;
+            IsDownloading = false;
+            Status = false;
+            LinkChoice = false;
         }
-
-        public string Name { get => name; set => name = value; }
-        public bool Status { get => status; set => status = value; }
-        public bool LinkChoice { get => linkchoice; set => linkchoice = value; }
-        public bool IsDownloading { get => isDownloading; set => isDownloading = value; }
 
         public async Task Download()
         {
-            string filePath = "C:\\Users\\Main-PC\\Desktop\\PDFDownload\\" + Name + ".pdf";
+            IsDownloading = true;
+            string filePath = $"C:\\Users\\Main-PC\\Desktop\\PDFDownload\\{Name}.pdf";
+
             try
             {
                 using HttpClient client = new HttpClient();
-                using HttpResponseMessage response = await client.GetAsync(this.pdfFurLink);
+                using HttpResponseMessage response = await client.GetAsync(PdfUrl);
                 response.EnsureSuccessStatusCode();
 
                 if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
                 {
                     byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
                     await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                    Status = true;
+                    LinkChoice = true;
+                    IsDownloading = false;
+                    return;   
                 }
-                else { this.linkchoice = false; }
             }
             catch
             {
-                this.linkchoice = false;
+                
             }
 
-
-            if (!this.linkchoice)
-            {
-                try
-                {
-                    if (this.reportHtmlAddress != "")
-                    {
-
-                        using HttpClient client = new HttpClient();
-                        using HttpResponseMessage response = await client.GetAsync(this.reportHtmlAddress);
-                        response.EnsureSuccessStatusCode();
-
-                        if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
-                        {
-                            byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
-                            await File.WriteAllBytesAsync(filePath, pdfBytes);
-                        }
-                        else { status = false; }
-                    }
-                    else { status = false; }
-
-                }
-                catch
-                {
-                    status = false;
-                }
-            }
-            isDownloading = false;
-        }
-
-        private bool IsPdfEmpty(string filePath)
-        {
+            
             try
             {
-                using (var stream = File.OpenRead(filePath))
+                if (!string.IsNullOrWhiteSpace(ReportHtmlUrl))
                 {
-                    byte[] header = new byte[5]; // %PDF- = 5 bytes
-                    stream.Read(header, 0, 5);
-                    string headerString = System.Text.Encoding.ASCII.GetString(header);
+                    using HttpClient client = new HttpClient();
+                    using HttpResponseMessage response = await client.GetAsync(ReportHtmlUrl);
+                    response.EnsureSuccessStatusCode();
 
-                    if (!headerString.StartsWith("%PDF"))
+                    if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
                     {
-                        Console.WriteLine("Invalid PDF header — deleting file.");
-                        File.Delete(filePath);
-                        return false;
+                        byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                        await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                        Status = true;
+                        LinkChoice = false;
+                    }
+                    else
+                    {
+                        Status = false;
                     }
                 }
-
-                Console.WriteLine("File is a valid PDF.");
+                else
+                {
+                    Status = false;
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Error reading file: {ex.Message}");
-                File.Delete(filePath);
+                Status = false;
             }
-            return true;
+            finally
+            {
+                IsDownloading = false;
+            }
         }
     }
 }
