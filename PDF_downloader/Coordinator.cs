@@ -52,7 +52,7 @@ namespace PDF_downloader
                 //{
                 //    number = range.RowCount();
                 //}
-                for (int row = 2; row <= 51; row++)
+                for (int row = 2; row <= range.RowCount(); row++)
                 {
                     var cellValueName = worksheet.Cell(row, cellValueNameNum).GetValue<string>();
                     var cellValuePdf = worksheet.Cell(row, cellValuePdfNum).GetValue<string>();
@@ -92,6 +92,7 @@ namespace PDF_downloader
                 worksheet.Cell(1, cellValueNameNum).Value = "BRnum";
                 worksheet.Cell(1, cellValuePdfdownload).Value = "pdf_downloaded";
                 worksheet.Cell(1, cellValueLinkUsed).Value = "Link_Used";
+                workbook.SaveAs("..\\..\\..\\list_of_Downloads.xlsx");
 
                 int downLoadesCounter = 0;
                 for (int row = 2; row <= downloaders.Count+1; row++)
@@ -117,8 +118,13 @@ namespace PDF_downloader
                         worksheet.Cell(row, cellValueLinkUsed).Value = "N/A";
                     }
                     downLoadesCounter++;
+
+                    if (row % 100 == 0)
+                    {
+                        workbook.Save();
+                    }
                 }
-                workbook.SaveAs("..\\..\\..\\list_of_Downloads.xlsx");
+                workbook.Save();
                 Console.Clear();
                 Console.WriteLine("Work done");
             }
