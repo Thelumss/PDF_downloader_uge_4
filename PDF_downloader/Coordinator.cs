@@ -8,10 +8,8 @@ namespace PDF_downloader
         private string excelFilePath = "..\\..\\..\\GRI_2017_2020.xlsx";
         public string linkfilepath {  get; set; }
 
-        public Coordinator(string excelFilePath, string linkFilepath)
+        public Coordinator()
         {
-            this.excelFilePath = excelFilePath;
-            this.linkfilepath = linkFilepath;
         }
 
         private List<Downloader> downloaders = new List<Downloader>();
@@ -61,7 +59,7 @@ namespace PDF_downloader
             }
 
             
-            const int batchSize = 100;
+            const int batchSize = 10;
             for (int i = 0; i < downloaders.Count; i += batchSize)
             {
 

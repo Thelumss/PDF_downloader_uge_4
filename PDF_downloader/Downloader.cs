@@ -5,7 +5,6 @@
         public string Name { get; set; }
         public string PdfUrl { get; set; }
         public string ReportHtmlUrl { get; set; }
-        public string FilePath { get; set; }
         public bool IsDownloading { get; private set; }
         public bool Status { get; private set; }
         public bool LinkChoice { get; private set; }
@@ -15,7 +14,6 @@
             Name = name;
             PdfUrl = pdfUrl;
             ReportHtmlUrl = reportHtmlUrl;
-            FilePath = filePath;
             IsDownloading = false;
             Status = false;
             LinkChoice = false;
@@ -24,7 +22,7 @@
         public async Task Download()
         {
             IsDownloading = true;
-            //string filePath = $"C:\\Users\\Main-PC\\Desktop\\PDFDownload\\{Name}.pdf";
+            string filePath = $"C:\\Users\\SPAC-O-2\\Desktop\\TestDownload\\{Name}.pdf";
 
             try
             {
@@ -35,7 +33,7 @@
                 if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
                 {
                     byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
-                    await File.WriteAllBytesAsync(FilePath, pdfBytes);
+                    await File.WriteAllBytesAsync(filePath, pdfBytes);
 
                     Status = true;
                     LinkChoice = true;
@@ -60,7 +58,7 @@
                     if (response.Content.Headers.ContentType?.MediaType == "application/pdf")
                     {
                         byte[] pdfBytes = await response.Content.ReadAsByteArrayAsync();
-                        await File.WriteAllBytesAsync(FilePath, pdfBytes);
+                        await File.WriteAllBytesAsync(filePath, pdfBytes);
 
                         Status = true;
                         LinkChoice = false;

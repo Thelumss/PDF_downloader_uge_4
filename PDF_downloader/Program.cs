@@ -5,11 +5,7 @@ namespace PDF_downloader
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("give the abslue path for the excel file with the links");
-            string excelpath = Console.ReadLine();
-            Console.WriteLine("give the abslue path for where the pdf should end up");
-            string pdfdumpfile = Console.ReadLine();
-            Coordinator coordinator = new Coordinator(excelpath, pdfdumpfile);
+            Coordinator coordinator = new Coordinator();
 
             await coordinator.Coordinating();
         }
